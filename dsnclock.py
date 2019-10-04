@@ -1,33 +1,25 @@
-from tkinter import *
-from tkinter.ttk import *
+import sys
 import datetime
-from time import strftime
-from tkinter import Label
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QPushButton
 from pytz import timezone
-from PIL import Image, ImageOps, ImageTk
 
-font = 'calibri'
-timeColor = 'dark red'
-imgWidth = 100
-imgHeight = 50
+def window():
+    app = QApplication(sys.argv)
+    win = QWidget()
+    grid = QGridLayout()
 
-#function to initialize tkinter window
-def initWindow():
-    root = Tk()
-    root.configure(background='black')
-    root.title('DSN Clock')
-
-    #add weight to each cell in the grid so they can resize
-    for row in range(4):
-        Grid.rowconfigure(root, row, weight=1)
-
-    for col in range(3):
-        Grid.columnconfigure(root, col, weight=1)
+    for i in range(0, 3):
+        for j in range(0, 4):
+            grid.addWidget(QPushButton(str(i)+str(j)),i,j)
     
-    return root
+    win.setLayout(grid)
+    win.setWindowTitle("Hello World!")
+    win.show()
+    #only exits program when app's exit is pressed
+    sys.exit(app.exec_())
 
 #function to configure local times
-def time():
+def time(tzTimes):
     # UTC / GMT Formatting
     tzUTC = datetime.datetime.utcnow().strftime('%H:%M:%S')
     # PST / GDSCC Local Formatting
@@ -52,33 +44,5 @@ def time():
     tzTimes[3].config(text=tzcdscc)
     tzTimes[1].after(1000, time)
 
-
-if __name__ == "__main__":
-    root = initWindow()
-    #images representing each timezone
-    photos = [Image.open('abstractworld.gif'), Image.open('amerFlag.png'), Image.open('spainFlag.png'), Image.open('ausFlag.png')]
-    #timezone labels
-    tzLabels = ["UTC Time:", "GDSCC Local:", "MDSCC Local:", "CDSCC Local:"]
-    #initialize local clocks array
-    tzTimes = []
-    
-    for i in range(len(photos)):
-        #place image on grid
-        image = photos[i].resize((imgWidth, imgHeight), Image.ANTIALIAS)
-        photoImg =  ImageTk.PhotoImage(image)
-        photoLabel = Label(root, image=photoImg, background='black')
-        photoLabel.image = photoImg #create a reference of image to avoid garbage collection
-        photoLabel.config(borderwidth=0)
-        photoLabel.grid(row=i, column=0, padx=10, sticky=N+S+E+W)
-
-        #place label on grid
-        tzLabel = Label(root, font=(font, imgHeight, 'bold'), background='black', foreground='white', text=tzLabels[i])
-        tzLabel.grid(row=i, column=1, sticky=N+S+E+W)
-
-        #place digital clock label on grid and add to tzTimes
-        tzTime = Label(root, font=(font, imgHeight, 'bold'), background='black', foreground=timeColor)
-        tzTime.grid(row=i, column=2, sticky=N+S+E+W, padx=10)
-        tzTimes.append(tzTime)
-    
-    time()
-    root.mainloop()
+if __name__ == '__main__':
+    window()
